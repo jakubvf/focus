@@ -33,7 +33,7 @@ pub fn main() void {
                 focus.util.panic("Unrecognized arg: {s}", .{arg});
             }
         } else {
-            const absolute_filename = std.fs.path.resolve(arena.allocator(), &[_][]const u8{arg}) catch focus.util.oom();
+            const absolute_filename = std.fs.realpathAlloc(arena.allocator(), arg) catch focus.util.panic("could not resolve file {s}\n", .{arg});
             action = .{ .Request = .{ .CreateEditorWindow = absolute_filename } };
         }
     }

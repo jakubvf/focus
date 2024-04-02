@@ -12,12 +12,12 @@ pub fn build(b: *std.build.Builder) !void {
     config.addOption(
         []const u8,
         "home_path",
-        b.option([]const u8, "home-path", "") orelse "/home/jamie/",
+        b.option([]const u8, "home-path", "") orelse "/home/jvf/dev/focus/",
     );
     config.addOption(
         []const u8,
         "projects_file_path",
-        b.option([]const u8, "projects-file-path", "") orelse "/home/jamie/secret/projects",
+        b.option([]const u8, "projects-file-path", "") orelse "/home/jvf/dev/focus/projects.txt",
     );
 
     const exe = b.addExecutable(.{
@@ -39,6 +39,10 @@ pub fn build(b: *std.build.Builder) !void {
     exe_step.dependOn(&exe.step);
 
     const run = b.addRunArtifact(exe);
+    if (b.args) |args| {
+        run.addArgs(args);
+    }
+
     const run_step = b.step("run", "Run");
     run_step.dependOn(&run.step);
 }
