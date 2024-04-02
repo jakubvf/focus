@@ -77,10 +77,6 @@ pub const Selector = struct {
                 .key_press, .key_repeat => |key_press_event| {
                     if (key_press_event.mods.control) {
                         switch (key_press_event.key) {
-                            .k => self.selected += 1,
-                            .i => if (self.selected != 0) {
-                                self.selected -= 1;
-                            },
                             .enter => {
                                 action = .SelectRaw;
                             },
@@ -97,6 +93,10 @@ pub const Selector = struct {
                         }
                     } else {
                         switch (key_press_event.key) {
+                            .down => self.selected += 1,
+                            .up => if (self.selected != 0) {
+                                self.selected -= 1;
+                            },
                             .enter => if (num_items != 0) {
                                 action = .SelectOne;
                             },

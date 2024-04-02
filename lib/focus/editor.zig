@@ -158,6 +158,17 @@ pub const Editor = struct {
                 .key_press, .key_repeat => |key_event| {
                     if (key_event.mods.control and !key_event.mods.shift) {
                         switch (key_event.key) {
+                            .end => {
+                                for (self.cursors.items) |*cursor| self.goBufferEnd(cursor);
+                                // hardcode because we want to scroll even if cursor didn't move
+                                const num_lines = self.line_wrapped_buffer.countLines();
+                                self.top_pixel = @as(u.Coord, @intCast(if (num_lines == 0) 0 else num_lines - 1)) * self.app.atlas.char_height;
+                            },
+                            .home => {
+                                for (self.cursors.items) |*cursor| self.goBufferStart(cursor);
+                                // hardcode because we want to scroll even if cursor didn't move
+                                self.top_pixel = 0;
+                            },
                             .space => self.toggleMark(),
                             .c => {
                                 for (self.cursors.items) |*cursor| self.copy(cursor);
@@ -171,10 +182,6 @@ pub const Editor = struct {
                                 for (self.cursors.items) |*cursor| self.paste(cursor);
                                 self.clearMark();
                             },
-                            .j => for (self.cursors.items) |*cursor| self.goLeft(cursor),
-                            .l => for (self.cursors.items) |*cursor| self.goRight(cursor),
-                            .k => for (self.cursors.items) |*cursor| self.goWrappedDown(cursor),
-                            .i => for (self.cursors.items) |*cursor| self.goWrappedUp(cursor),
                             .q => {
                                 self.collapseCursors();
                                 self.clearMark();
@@ -214,19 +221,6 @@ pub const Editor = struct {
                     } else if (key_event.mods.alt) {
                         switch (key_event.key) {
                             .space => for (self.cursors.items) |*cursor| self.swapHead(cursor),
-                            .j => for (self.cursors.items) |*cursor| self.goRealLineStart(cursor),
-                            .l => for (self.cursors.items) |*cursor| self.goRealLineEnd(cursor),
-                            .k => {
-                                for (self.cursors.items) |*cursor| self.goBufferEnd(cursor);
-                                // hardcode because we want to scroll even if cursor didn't move
-                                const num_lines = self.line_wrapped_buffer.countLines();
-                                self.top_pixel = @as(u.Coord, @intCast(if (num_lines == 0) 0 else num_lines - 1)) * self.app.atlas.char_height;
-                            },
-                            .i => {
-                                for (self.cursors.items) |*cursor| self.goBufferStart(cursor);
-                                // hardcode because we want to scroll even if cursor didn't move
-                                self.top_pixel = 0;
-                            },
                             .slash => for (self.cursors.items) |*cursor| self.modifyComment(cursor, .Remove),
                             .g => {
                                 const project_dir = self.buffer.getProjectDir() orelse focus.config.projects_file_path;
@@ -251,6 +245,12 @@ pub const Editor = struct {
                         }
                     } else {
                         switch (key_event.key) {
+                            .left => for (self.cursors.items) |*cursor| self.goLeft(cursor),
+                            .right => for (self.cursors.items) |*cursor| self.goRight(cursor),
+                            .down => for (self.cursors.items) |*cursor| self.goWrappedDown(cursor),
+                            .up => for (self.cursors.items) |*cursor| self.goWrappedUp(cursor),
+                            .home => for (self.cursors.items) |*cursor| self.goRealLineStart(cursor),
+                            .end => for (self.cursors.items) |*cursor| self.goRealLineEnd(cursor),
                             .backspace => {
                                 for (self.cursors.items) |*cursor| self.deleteBackwards(cursor);
                                 self.clearMark();
