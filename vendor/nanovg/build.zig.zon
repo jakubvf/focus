@@ -1,17 +1,19 @@
 .{
     .name = "focus",
-    .version = "0.0.1",
-    .paths = .{""},
+    .version = "0.0.0",
+    .paths = .{
+        "bin/",
+        "fonts/",
+        "lib/",
+        "build.zig"
+    },
     .dependencies = .{
         .mach_glfw = .{
             .url = "https://github.com/mitchellh/mach-glfw/archive/37c2995f31abcf7e8378fba68ddcf4a3faa02de0.tar.gz",
             .hash = "12206ed982e709e565d536ce930701a8c07edfd2cfdce428683f3f2a601d37696a62",
+            .lazy = true,
         },
 
-        .freetype = .{ .path = "./vendor/freetype" },
-
-        .zlib = .{ .path = "./vendor/zlib" },
-
-        // .nanovg = .{ .path = "./vendor/nanovg" },
+        
     },
 }
